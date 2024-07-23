@@ -41,20 +41,37 @@ unittest(test_constructor)
 {
   Student S;
 
-  assertEqual(10, S.getSize());
+  assertEqual(20, S.getSize());
   assertEqual(00, S.getCount());
 }
 
 
-unittest(test_add)
+unittest(test_all)
 {
   Student S;
 
-  S.add(100);
+  S.reset();
+  assertEqual(0, S.getCount());
 
-  assertEqual(10, S.getSize());
-  assertEqual(01, S.getCount());
-  
+  S.add(12.4);
+  S.add(11.8);
+  S.add(12.0);
+  S.add(11.7);
+  S.add(12.1);
+  S.add(12.3);
+  S.add(11.9);
+  S.add(11.6);
+  S.add(11.9);
+  S.add(12.3);
+
+  assertEqual(10, S.getCount());
+  assertEqualFloat(12.0, S.mean(), 0.001);
+  assertEqualFloat(0.073, S.variance(), 0.001);
+  assertEqualFloat(0.271, S.deviation(), 0.001);
+  assertEqualFloat(0.086, S.estimatedDeviation(), 0.001);
+
+  assertEqualFloat(11.809, S.meanLower(95), 0.001);
+  assertEqualFloat(12.191, S.meanUpper(95), 0.001);
 }
 
 

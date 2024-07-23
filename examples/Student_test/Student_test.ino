@@ -33,9 +33,10 @@ void setup(void)
   //    S.add(i);
   //  }
   Serial.print("Size:\t");
-  Serial.println(S.getSize(),3);
+  Serial.println(S.getSize());
   Serial.print("Count:\t");
-  Serial.println(S.getCount(), 3);
+  Serial.println(S.getCount());
+
   Serial.print("mean:\t");
   Serial.println(S.mean(), 3);
   Serial.print("var:\t");
