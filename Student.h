@@ -18,7 +18,7 @@ class Student
 public:
   Student()
   {
-    _size = 10;
+    _size = STUDENT_MAX_SIZE;
     _count = 0;
   }
 
@@ -133,7 +133,7 @@ private:
   uint8_t _size;
   uint8_t _count;
   float   _mean = 0;
-  float   _value[20];
+  float   _value[STUDENT_MAX_SIZE];
 
 };
 

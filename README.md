@@ -23,28 +23,48 @@ based upon a (very) small sample (selection).
 Goal is to calculate the interval for which there is a certain confidence e.g. 95%, 
 that the population mean lies between the estimated mean from the sample +- some intervalDelta.
 
-The 0.1.x version of the library uses a lookup table for sample size is 2..20, and for the 
-discrete confidence levels 80%, 90%, 95%, 98% and 99%.
-This look up table is defined in the file **StudentTable.h** and generated from a spreadsheet.
-Note: values in the LUT are single sided.
+The 0.1.x version of the library is limited to a maximum of 20 samples to keep RAM usage 
+relative low. 
+It uses a lookup table (LUT) for a sample size up to 20, and for five discrete confidence 
+levels 80%, 90%, 95%, 98% and 99% ==> size table = 20 x 5 = 100 floats. 
+The table encodes the 100 floats as uint16_t to save 50% of the RAM needed.
 
 The library allows to calculate the interval after every addition until the internal buffer
-of 20 samples is full. (At least 2 samples needed)
+of 20 samples is full. Note that at least 2 samples are needed to calculate the interval.
+
+
+### StudentTable.h
+
+The table is defined in the file **StudentTable.h** and generated from a spreadsheet.
+
+If one need to extend the sample size, the file contains commented values for sample size 21-100.
+One has to adjust **STUDENT_MAX_SIZE** in **StudentTable.h** too (max 255).
+Note this will cost extra RAM.
+
+If one wants to reduce the sample size / RAM, one can comment part of the table not needed.
+One has to adjust **STUDENT_MAX_SIZE** too.
 
 
 ### History
 
-The T-distribution is developed by W.A. Gosset in 1908 while working for Guinness Beer.
-His goal was to guard a constant quality of the beer. For this he needed a method to determine
-the quality of the raw materials like grains, malt and hops to 
+The T-distribution is developed by William Gosset, head experimental brewer, in 1908 while 
+working for Guinness Beer. His goal was to guard a constant quality of the beer brewed.
+He needed a method to determine the quality of the raw materials like grains, malt and hops,
+based on small samples from the fields. 
+For this he invented the t-distribution and published it under the name Student. 
+Therefore this distribution is also known as the Student distribution.
+
 
 ### Accuracy / precision
 
-The version 0.1.x lookup table has 20 x 5 values with 3 decimals, coded as an uint16_t (for RAM)
-This allows about 3-4 digits precision in the found interval.
+The version 0.1.x uses float for internal storage. This means precision is at most 6-7 digits.
 
-The 0.1.x version does not interpolate the confidence level yet, and only support 5 distinct levels.
+The version 0.1.x lookup table has 20 x 5 values with 3 decimals, coded as an uint16_t (for RAM)
+This allows about 3-4 digits precision for the found interval.
+
+The 0.1.x version does not interpolate the confidence level (yet), and only support 5 distinct levels.
 This interpolation (between 80-99) is planned to be implemented in the future.
+If a non supported confidence level is used, the library will use 95%.
 
 If you need only one confidence interval you could strip the lookup table to one column.
 
@@ -78,11 +98,10 @@ If you need only one confidence interval you could strip the lookup table to one
 #include Student.h
 ```
 
-
 ### Constructor + meta
 
-- **Student()** constructor. 0.1.x has a fixed max sample size = 20.
-- **uint8_t getSize()** returns 20.
+- **Student()** constructor. 0.1.x has a fixed max sample size STUDENT_MAX_SIZE = 20.
+- **uint8_t getSize()** returns STUDENT_MAX_SIZE == 20.
 - **uint8_t getCount()** returns the number of samples added.
 Returns value between 0 .. getSize().
 - **void reset()** resets internal counter to zero.
@@ -96,9 +115,10 @@ Returns false if the internal buffer would "overflow".
 
 ### Math
 
-- **float mean()** returns estimated mean based upon samples added.
-- **float variance()** idem
-- **float deviation()** idem
+- **float mean()** returns mean (average) of the samples added. 
+This is the estimated mean of the population from which the samples are taken.
+- **float variance()** returns variance of the samples added.
+- **float deviation()** returns standard deviation of the samples added.
 - **float estimatedDeviation()** returns estimated deviation of the 
 estimated mean (based upon the samples).
 
@@ -106,7 +126,6 @@ estimated mean (based upon the samples).
 
 Confidence should be 80, 90, 95, 98 or 99. 
 The confidence level is not interpolated and incorrect values are replaced by 95%.
-
 
 - **float intervalDelta(int confidence)** returns the delta to be added
 oor subtracted to the mean to determine the confidence interval.
@@ -128,6 +147,7 @@ oor subtracted to the mean to determine the confidence interval.
 - optimize lookup table, PROGMEM for footprint?
 - dynamic allocation for sizes > 20
   - or derived classes, student30, student40, student50, student100?
+  - linear interpolation for values > 10 (performance?)
 - add interpolation to **intervalDelta()** so confidence level (0.2.x)
   could be any integer value from 80-99 (maybe even float?)
 
@@ -135,6 +155,10 @@ oor subtracted to the mean to determine the confidence interval.
 
 - add examples
 - add unit tests
+- replace look up table with a formula? (performance drop!!)
+- access function for internal array to access samples?
+- template class instead of STUDENT_MAX_SIZE? (becomes different types).
+- circular buffer for the samples? Running T-test?
 
 #### Won't (unless requested)
 
