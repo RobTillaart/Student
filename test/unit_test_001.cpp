@@ -37,6 +37,12 @@ unittest_teardown()
 }
 
 
+unittest(test_constants)
+{
+  assertEqual(20, STUDENT_MAX_SIZE);
+}
+
+
 unittest(test_constructor)
 {
   Student S;

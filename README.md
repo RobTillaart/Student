@@ -45,6 +45,19 @@ If one wants to reduce the sample size / RAM, one can comment part of the table 
 One has to adjust **STUDENT_MAX_SIZE** too.
 
 
+### Application example
+
+If one wants to estimate the average temperature, one can measure it constantly and
+calculate the average from all measurements. This may take up to 3600 samples per hour.
+With the Student library one can measure the temperature once every 5 minutes.
+This give 12 samples from which one can calculate the interval of the average temperature 
+with 95% confidence.
+
+This takes far less samples and calculation time and might meet the insights you need.
+Furthermore using this method can be ideal in an low power environment (e.g. remote, 
+battery powered sensor, with long sleep) to get the information you need.
+
+
 ### History
 
 The T-distribution is developed by William Gosset, head experimental brewer, in 1908 while 
@@ -143,6 +156,7 @@ oor subtracted to the mean to determine the confidence interval.
 
 #### Should
 
+- t test example.
 - optimize code, e.g. cache values for performance.
 - optimize lookup table, PROGMEM for footprint?
 - dynamic allocation for sizes > 20
